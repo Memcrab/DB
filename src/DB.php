@@ -31,7 +31,7 @@ interface DB
     public function getObjects(string $qs, string $className = null, array $constructParrams = []): array;
     public function getObjectWithLogic(string $qs, callable $logic, string $className = 'stdClass', array $constructorParams = []): object;
     public function getObjectsWithLogic(string $qs, callable $logic, string $className = 'stdClass', array $constructorParams = []): array;
-    public function mres(): string;
+    public function mres(string $var): string;
     public function amres(array $array): array;
     public function ramres(array $array): array;
 }
