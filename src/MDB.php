@@ -6,6 +6,8 @@ namespace Memcrab\DB;
 
 use Memcrab\DB\DB;
 
+\mysqli_report(MYSQLI_REPORT_ALL);
+
 class MDB extends \mysqli implements DB
 {
     private static array $connections = [];
