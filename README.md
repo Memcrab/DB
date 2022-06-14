@@ -1,4 +1,4 @@
-PHP Router as Composer Library 
+DB Libriary for mysqli, mysqlnd and php 8.1
 ==========================
 Install
 --------
