@@ -3,7 +3,7 @@
     "description": "PHP DB Lib for Memcrab Core API",
     "keywords": [
         "database",
-        "mysql"
+        "mysql",
         "php",
         "lib",
         "memcrab"
