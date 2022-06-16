@@ -100,11 +100,10 @@ class MDB extends \mysqli implements DB
 
     public static function shutdown(): void
     {
-        foreach (self::$connections as $connection) {
+        foreach (self::$connections as $key=>$connection) {
             $connection->close();
+            unset(self::$connections[$key]);
         }
-
-        unset(self::$connections);
     }
 
     public function ping(): bool
@@ -266,7 +265,6 @@ class MDB extends \mysqli implements DB
 
     public function __destruct()
     {
-        self::__destruct();
         if ($this instanceof \mysqli) {
             $this->close();
         }
