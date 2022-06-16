@@ -22,7 +22,7 @@ interface DB
     public function setCredentials(string $host, int $port, string $user, string $password): void;
     public function setDatabase(string $database): void;
     public function setConnection(): void;
-    public function query(string $query, $resultMode = null);
+    public function query(string $query, int $resultMode);
     public function ping(): bool;
     public function start(): bool;
     public function getField(string  $qs, string $field): mixed;
