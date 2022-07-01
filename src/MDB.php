@@ -28,14 +28,10 @@ class MDB extends \mysqli implements DB
 
     public static function __callStatic(string $connection, $arguments = []): self|bool
     {
-        if (trim($connection) != '' && in_array($connection, self::$connections)) {
+        if (trim($connection) != '' && array_key_exists($connection, self::$connections)) {
             if (!isset(self::$connections[$connection])) {
                 throw new \Exception('Uknown database object `' . $connection . '`', 500);
             }
-            if (!is_resource(self::$connections[$connection]) || get_resource_type(self::$connections[$connection]) !== 'mysql link') {
-                throw new \Exception('Database object is not mysql resource.', 500);
-            }
-
             return self::$connections[$connection];
         } else {
             throw new \Exception('Uknown `' . $connection . '` connection');
@@ -64,6 +60,7 @@ class MDB extends \mysqli implements DB
         self::$connections[$name]->options(MYSQLI_OPT_INT_AND_FLOAT_NATIVE, true);
         self::$connections[$name]->options(MYSQLI_OPT_READ_TIMEOUT, $waitTimeout);
         self::$connections[$name]->options(MYSQLI_INIT_COMMAND, "SET TIME_ZONE='" . date('P') . "'");
+        self::$connections[$name]->options(MYSQLI_INIT_COMMAND, "SET SESSION sql_mode=(SELECT REPLACE(@@sql_mode,'ONLY_FULL_GROUP_BY',''));");
     }
 
     public function setName(string $name): void
