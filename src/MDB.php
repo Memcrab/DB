@@ -18,6 +18,7 @@ class MDB extends \mysqli implements DB
     private string $user;
     private string $password;
     private string $database;
+    private $ErrorHandler;
 
     public function __clone()
     {
@@ -28,17 +29,14 @@ class MDB extends \mysqli implements DB
 
     public static function __callStatic(string $connection, $arguments = []): self|bool
     {
-        if (trim($connection) != '' && in_array($connection, self::$connections)) {
+        if (isset(self::$connections[$connection])) {
             if (!isset(self::$connections[$connection])) {
                 throw new \Exception('Uknown database object `' . $connection . '`', 500);
-            }
-            if (!is_resource(self::$connections[$connection]) || get_resource_type(self::$connections[$connection]) !== 'mysql link') {
-                throw new \Exception('Database object is not mysql resource.', 500);
             }
 
             return self::$connections[$connection];
         } else {
-            throw new \Exception('Uknown `' . $connection . '` connection');
+            throw new \Exception('Unefined connection `' . $connection . '` to MDB, please declare it first.');
         }
     }
 
@@ -52,18 +50,22 @@ class MDB extends \mysqli implements DB
         string $user,
         string $password,
         string $database,
+        \Memcrab\Log\Log $ErrorHandler,
         string $encoding = 'utf8mb4',
         int $waitTimeout = 28800
     ): void {
         self::$connections[$name] = new self();
         self::$connections[$name]->setName($name);
         self::$connections[$name]->setDatabase($database);
+        self::$connections[$name]->setErrorHandler($ErrorHandler);
         self::$connections[$name]->setCredentials($host, $port, $user, $password);
         self::$connections[$name]->options(MYSQLI_OPT_CONNECT_TIMEOUT, 2);
         self::$connections[$name]->options(MYSQLI_SET_CHARSET_NAME, $encoding);
         self::$connections[$name]->options(MYSQLI_OPT_INT_AND_FLOAT_NATIVE, true);
         self::$connections[$name]->options(MYSQLI_OPT_READ_TIMEOUT, $waitTimeout);
         self::$connections[$name]->options(MYSQLI_INIT_COMMAND, "SET TIME_ZONE='" . date('P') . "'");
+
+        \register_shutdown_function("Memcrab\DB\MDB::shutdown");
     }
 
     public function setName(string $name): void
@@ -84,34 +86,36 @@ class MDB extends \mysqli implements DB
         $this->database = $database;
     }
 
-    private function error_log(\Exception $e, string $qs = ''): void
+    public function setErrorHandler(\Memcrab\Log\Log $ErrorHandler): void
     {
-        error_log(' DB Exception (name:`' . ($this->name ?? null) . '`): ' .  (string)$e . ', SQL:' . $qs);
+        $this->ErrorHandler = $ErrorHandler;
     }
 
-    public function setConnection(): void
+    private function error(\Exception $e, string $qs = ''): void
+    {
+        $this->ErrorHandler->error('MySQL Exception (name:`' . ($this->name ?? null) . '`): ' . $e->getMessage() .  ', SQL:' . $qs);
+    }
+
+    public function setConnection(): bool
     {
         try {
-            $this->real_connect($this->host, $this->user, $this->password, $this->database, $this->port);
+            if (@$this->real_connect($this->host, $this->user, $this->password, $this->database, $this->port) === false) {
+                throw new \Exception("Cant connect to MySQL. " . $this->connect_error, 500);
+            }
+            return true;
         } catch (\Exception $e) {
-            $this->error_log($e);
+            $this->error($e);
+            return false;
         }
     }
 
-    public static function shutdown(): void
-    {
-        foreach (self::$connections as $key=>$connection) {
-            $connection->close();
-            unset(self::$connections[$key]);
-        }
-    }
 
     public function ping(): bool
     {
         try {
-            return parent::ping();
+            return @parent::ping();
         } catch (\Exception $e) {
-            $this->error_log($e);
+            $this->error($e);
             return false;
         }
     }
@@ -145,7 +149,7 @@ class MDB extends \mysqli implements DB
             $row = $Result->fetch_array($type);
             $Result->free();
         } catch (\Exception $e) {
-            $this->error_log($e, $qs);
+            $this->error($e, $qs);
             $Result->free();
             throw $e;
         }
@@ -160,7 +164,7 @@ class MDB extends \mysqli implements DB
             $array = $Result->fetch_all($type);
             $Result->free();
         } catch (\Exception $e) {
-            $this->error_log($e, $qs);
+            $this->error($e, $qs);
             $Result->free();
             throw $e;
         }
@@ -222,7 +226,7 @@ class MDB extends \mysqli implements DB
             }
             $Result->free();
         } catch (\Exception $e) {
-            $this->error_log($e, $qs);
+            $this->error($e, $qs);
             $Result->free();
             throw $e;
         }
@@ -238,7 +242,7 @@ class MDB extends \mysqli implements DB
             $ResultObject = $logic($Object);
             $Result->free();
         } catch (\Exception $e) {
-            $this->error_log($e, $qs);
+            $this->error($e, $qs);
             $Result->free();
             throw $e;
         }
@@ -256,7 +260,7 @@ class MDB extends \mysqli implements DB
             }
             $Result->free();
         } catch (\Exception $e) {
-            $this->error_log($e, $qs);
+            $this->error($e, $qs);
             $Result->free();
             throw $e;
         }
@@ -267,6 +271,12 @@ class MDB extends \mysqli implements DB
     {
         if ($this instanceof \mysqli) {
             $this->close();
+        }
+    }
+    public static function shutdown(): void
+    {
+        foreach (self::$connections as $key => $connection) {
+            unset(self::$connections[$key]);
         }
     }
 }
