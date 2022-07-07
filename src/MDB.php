@@ -109,7 +109,7 @@ class MDB extends \mysqli implements DB
         }
     }
     
-    public function cloneConnection(): object
+    public function clone(): object
     {
         try {
             if (is_object($this)) {
@@ -118,9 +118,11 @@ class MDB extends \mysqli implements DB
                 foreach ($vars as $key => $value) {
                     $connections->$key = $value;
                 }
+                $connections->setConnection();
+                return $connections;
+            } else {
+                throw new \Exception("Cant clone connection. " . $this->connect_error, 500);
             }
-            $connections->setConnection();
-            return $connections; 
         } catch (\Exception $e) {
             $this->error($e);
         }
