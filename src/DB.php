@@ -13,7 +13,7 @@ interface DB
         string $user,
         string $password,
         string $database,
-        \Memcrab\Log\Log $ErrorHandler,
+        \Monolog\Logger $ErrorHandler,
         string $encoding = 'utf8mb4',
         int $waitTimeout = 28800
     ): void;
@@ -22,7 +22,7 @@ interface DB
     public function setName(string $name): void;
     public function setCredentials(string $host, int $port, string $user, string $password): void;
     public function setDatabase(string $database): void;
-    public function setErrorHandler(\Memcrab\Log\Log $ErrorHandler): void;
+    public function setErrorHandler(\Monolog\Logger $ErrorHandler): void;
     public function setConnection(): bool;
     public function query(string $query, int $resultMode);
     public function ping(): bool;

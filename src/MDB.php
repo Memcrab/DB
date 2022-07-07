@@ -50,7 +50,7 @@ class MDB extends \mysqli implements DB
         string $user,
         string $password,
         string $database,
-        \Memcrab\Log\Log $ErrorHandler,
+        \Monolog\Logger $ErrorHandler,
         string $encoding = 'utf8mb4',
         int $waitTimeout = 28800
     ): void {
@@ -86,7 +86,7 @@ class MDB extends \mysqli implements DB
         $this->database = $database;
     }
 
-    public function setErrorHandler(\Memcrab\Log\Log $ErrorHandler): void
+    public function setErrorHandler(\Monolog\Logger $ErrorHandler): void
     {
         $this->ErrorHandler = $ErrorHandler;
     }
