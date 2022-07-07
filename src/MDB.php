@@ -108,7 +108,23 @@ class MDB extends \mysqli implements DB
             return false;
         }
     }
-
+    
+    public function cloneConnection(): object
+    {
+        try {
+            if (is_object($this)) {
+                $vars = get_object_vars($this);
+                $connections = new self();
+                foreach ($vars as $key => $value) {
+                    $connections->$key = $value;
+                }
+            }
+            $connections->setConnection();
+            return $connections; 
+        } catch (\Exception $e) {
+            $this->error($e);
+        }
+    }
 
     public function ping(): bool
     {
