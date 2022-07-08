@@ -109,10 +109,8 @@ class MDB extends \mysqli implements DB
         }
     }
     
-    public function clone(): object
+    public function clone(): \Memcrab\DB\MDB
     {
-        try {
-            if (is_object($this)) {
                 $vars = get_object_vars($this);
                 $connections = new self();
                 foreach ($vars as $key => $value) {
@@ -120,12 +118,6 @@ class MDB extends \mysqli implements DB
                 }
                 $connections->setConnection();
                 return $connections;
-            } else {
-                throw new \Exception("Cant clone connection. " . $this->connect_error, 500);
-            }
-        } catch (\Exception $e) {
-            $this->error($e);
-        }
     }
 
     public function ping(): bool
