@@ -108,7 +108,17 @@ class MDB extends \mysqli implements DB
             return false;
         }
     }
-
+    
+    public function copy(): \Memcrab\DB\MDB
+    {
+                $vars = get_object_vars($this);
+                $connections = new self();
+                foreach ($vars as $key => $value) {
+                    $connections->$key = $value;
+                }
+                $connections->setConnection();
+                return $connections;
+    }
 
     public function ping(): bool
     {
