@@ -109,7 +109,7 @@ class MDB extends \mysqli implements DB
         }
     }
     
-    public function clone(): \Memcrab\DB\MDB
+    public function copy(): \Memcrab\DB\MDB
     {
                 $vars = get_object_vars($this);
                 $connections = new self();
