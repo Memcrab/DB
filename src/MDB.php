@@ -69,9 +69,9 @@ class MDB extends \mysqli implements DB
         \register_shutdown_function("Memcrab\DB\MDB::shutdown");
     }
     
-    public function setInitCommand(string $sql): void
+    public function setInitCommand(string $initCommand): void
     {
-        $this->options = $sql;
+        $this->options = $initCommand;
         $this->options(MYSQLI_INIT_COMMAND, $this->options);
     }
 
