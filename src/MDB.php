@@ -19,6 +19,7 @@ class MDB extends \mysqli implements DB
     private string $password;
     private string $database;
     private $ErrorHandler;
+    private string $options;
 
     public function __clone()
     {
@@ -70,7 +71,8 @@ class MDB extends \mysqli implements DB
     
     public function setInitCommand(string $sql): void
     {
-        $this->options(MYSQLI_INIT_COMMAND, $sql);
+        $this->options = $sql;
+        $this->options(MYSQLI_INIT_COMMAND, $this->options);
     }
 
     public function setName(string $name): void
@@ -120,6 +122,9 @@ class MDB extends \mysqli implements DB
                 $connections = new self();
                 foreach ($vars as $key => $value) {
                     $connections->$key = $value;
+                }
+                if (isset($this->options)) {
+                    $connections->options(MYSQLI_INIT_COMMAND, $this->options);
                 }
                 $connections->setConnection();
                 return $connections;
