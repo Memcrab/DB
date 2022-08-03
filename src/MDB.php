@@ -18,6 +18,9 @@ class MDB extends \mysqli implements DB
     private string $user;
     private string $password;
     private string $database;
+    private int $waitTimeout = 28800;
+    private string $encoding = 'utf8mb4';
+    private string $initCommand = '';
     private $ErrorHandler;
 
     public function __clone()
@@ -59,23 +62,30 @@ class MDB extends \mysqli implements DB
         self::$connections[$name]->setDatabase($database);
         self::$connections[$name]->setErrorHandler($ErrorHandler);
         self::$connections[$name]->setCredentials($host, $port, $user, $password);
-        self::$connections[$name]->options(MYSQLI_OPT_CONNECT_TIMEOUT, 2);
-        self::$connections[$name]->options(MYSQLI_SET_CHARSET_NAME, $encoding);
-        self::$connections[$name]->options(MYSQLI_OPT_INT_AND_FLOAT_NATIVE, true);
-        self::$connections[$name]->options(MYSQLI_OPT_READ_TIMEOUT, $waitTimeout);
-        self::$connections[$name]->options(MYSQLI_INIT_COMMAND, "SET TIME_ZONE='" . date('P') . "'");
-
+        self::$connections[$name]->setWaitTimeout($waitTimeout);
+        self::$connections[$name]->setEncoding($encoding);
+        self::$connections[$name]->setInitCommand("SET TIME_ZONE='" . date('P') . "'");
         \register_shutdown_function("Memcrab\DB\MDB::shutdown");
     }
-    
+
     public function setInitCommand(string $sql): void
     {
-        $this->options(MYSQLI_INIT_COMMAND, $sql);
+        $this->initCommand = $sql;
     }
 
     public function setName(string $name): void
     {
         $this->name = $name;
+    }
+
+    public function setWaitTimout(int $waitTimeout): void
+    {
+        $this->waitTimeout = $waitTimeout;
+    }
+
+    public function setEncoding(string $encoding): void
+    {
+        $this->encoding = $encoding;
     }
 
     public function setCredentials(string $host, int $port, string $user, string $password): void
@@ -101,9 +111,20 @@ class MDB extends \mysqli implements DB
         $this->ErrorHandler->error('MySQL Exception (name:`' . ($this->name ?? null) . '`): ' . $e->getMessage() .  ', SQL:' . $qs);
     }
 
+    private function declareConnectinOptions()
+    {
+        $this->options(MYSQLI_OPT_CONNECT_TIMEOUT, 2);
+        $this->options(MYSQLI_SET_CHARSET_NAME, $this->encoding);
+        $this->options(MYSQLI_OPT_INT_AND_FLOAT_NATIVE, true);
+        $this->options(MYSQLI_OPT_READ_TIMEOUT, $this->waitTimeout);
+        $this->options(MYSQLI_INIT_COMMAND, $this->initCommand);
+    }
+
     public function setConnection(): bool
     {
         try {
+
+            $this->declareConnectinOptions();
             if (@$this->real_connect($this->host, $this->user, $this->password, $this->database, $this->port) === false) {
                 throw new \Exception("Cant connect to MySQL. " . $this->connect_error, 500);
             }
@@ -113,16 +134,16 @@ class MDB extends \mysqli implements DB
             return false;
         }
     }
-    
+
     public function copy(): \Memcrab\DB\MDB
     {
-                $vars = get_object_vars($this);
-                $connections = new self();
-                foreach ($vars as $key => $value) {
-                    $connections->$key = $value;
-                }
-                $connections->setConnection();
-                return $connections;
+        $vars = get_object_vars($this);
+        $connections = new self();
+        foreach ($vars as $key => $value) {
+            $connections->$key = $value;
+        }
+        $connections->setConnection();
+        return $connections;
     }
 
     public function ping(): bool
