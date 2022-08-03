@@ -78,7 +78,7 @@ class MDB extends \mysqli implements DB
         $this->name = $name;
     }
 
-    public function setWaitTimout(int $waitTimeout): void
+    public function setWaitTimeout(int $waitTimeout): void
     {
         $this->waitTimeout = $waitTimeout;
     }
