@@ -124,7 +124,7 @@ class MDB extends \mysqli implements DB
     {
         try {
 
-            $this->declareConnectinOptions();
+            $this->declareConnectiоnOptions();
             if (@$this->real_connect($this->host, $this->user, $this->password, $this->database, $this->port) === false) {
                 throw new \Exception("Cant connect to MySQL. " . $this->connect_error, 500);
             }
