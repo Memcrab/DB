@@ -111,7 +111,7 @@ class MDB extends \mysqli implements DB
         $this->ErrorHandler->error('MySQL Exception (name:`' . ($this->name ?? null) . '`): ' . $e->getMessage() .  ', SQL:' . $qs);
     }
 
-    private function declareConnectinOptions()
+    private function declareConnectiоnOptions()
     {
         $this->options(MYSQLI_OPT_CONNECT_TIMEOUT, 2);
         $this->options(MYSQLI_SET_CHARSET_NAME, $this->encoding);
