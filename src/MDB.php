@@ -186,7 +186,7 @@ class MDB extends \mysqli implements DB
             $Result->free();
         } catch (\Exception $e) {
             $this->error($e, $qs);
-            $Result->free();
+            isset($Result) ?? $Result->free();
             throw $e;
         }
 
@@ -201,7 +201,7 @@ class MDB extends \mysqli implements DB
             $Result->free();
         } catch (\Exception $e) {
             $this->error($e, $qs);
-            $Result->free();
+            isset($Result) ?? $Result->free();
             throw $e;
         }
         return $array;
@@ -263,7 +263,7 @@ class MDB extends \mysqli implements DB
             $Result->free();
         } catch (\Exception $e) {
             $this->error($e, $qs);
-            $Result->free();
+            isset($Result) ?? $Result->free();
             throw $e;
         }
 
@@ -279,7 +279,7 @@ class MDB extends \mysqli implements DB
             $Result->free();
         } catch (\Exception $e) {
             $this->error($e, $qs);
-            $Result->free();
+            isset($Result) ?? $Result->free();
             throw $e;
         }
         return $ResultObject;
@@ -297,7 +297,7 @@ class MDB extends \mysqli implements DB
             $Result->free();
         } catch (\Exception $e) {
             $this->error($e, $qs);
-            $Result->free();
+            isset($Result) ?? $Result->free();
             throw $e;
         }
         return $objects;
