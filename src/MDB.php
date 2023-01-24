@@ -292,7 +292,7 @@ class MDB extends \mysqli implements DB
             $Result = $this->query($qs);
 
             while ($Object =  $Result->fetch_object($className, $constructorParams)) {
-                array_push($objects, $logic($Object, $constructorParams));
+                array_push($objects, $logic($Object));
             }
             $Result->free();
         } catch (\Exception $e) {
