@@ -11,6 +11,7 @@ use Memcrab\DB\DB;
 class MDB extends \mysqli implements DB
 {
     private static array $connections = [];
+    private static $context = [];
 
     private string $name;
     private int $port = 3306;
@@ -106,9 +107,14 @@ class MDB extends \mysqli implements DB
         $this->ErrorHandler = $ErrorHandler;
     }
 
+    public static function setContext(array $context): void
+    {
+        self::$context = $context;
+    }
+
     private function error(\Exception $e, string $qs = ''): void
     {
-        $this->ErrorHandler->error('MySQL Exception (name:`' . ($this->name ?? null) . '`): ' . $e->getMessage() .  ', SQL:' . $qs);
+        $this->ErrorHandler->error('MySQL Exception (name:`' . ($this->name ?? null) . '`): ' . $e->getMessage() .  ', SQL:' . $qs, self::$context);
     }
 
     private function declareConnectiоnOptions()
