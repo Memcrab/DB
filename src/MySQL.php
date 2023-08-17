@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace Libs;
+namespace Memcrab\DB;
 
 use Monolog\Logger;
 use OpenSwoole\Core\Coroutine\Client\MysqliConfig;

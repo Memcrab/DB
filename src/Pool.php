@@ -1,6 +1,7 @@
 <?php
+declare(strict_types=1);
 
-namespace libs;
+namespace Memcrab\DB;
 
 use Monolog\Logger;
 use OpenSwoole\Coroutine;
