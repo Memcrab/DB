@@ -38,7 +38,6 @@ class MySQL extends \mysqli
         try {
             $this->close();
         } catch (\Throwable $e) {
-            $this->ErrorHandler->error('MySQL disconnect error: ' . $e);
         }
     }
 
