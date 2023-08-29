@@ -7,6 +7,8 @@ use Monolog\Logger;
 use OpenSwoole\Core\Coroutine\Client\MysqliConfig;
 use OpenSwoole\Core\Coroutine\Client\MysqliException;
 
+\mysqli_report(MYSQLI_REPORT_STRICT);
+
 class MySQL extends \mysqli
 {
     private Logger $ErrorHandler;
