@@ -6,7 +6,7 @@ namespace Memcrab\DB;
 
 use Memcrab\DB\DB;
 
-\mysqli_report(MYSQLI_REPORT_ALL);
+\mysqli_report(MYSQLI_REPORT_STRICT);
 
 class MDB extends \mysqli implements DB
 {
