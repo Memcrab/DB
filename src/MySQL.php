@@ -171,4 +171,37 @@ class MySQL extends \mysqli
         }
         return $objects;
     }
+
+    public function getWork(string $qs)
+    {
+        try {
+            if (!$this->query($qs)) {
+                echo (date("Y-m-d H:i:s") . ' >>>>>>>>>> Error mysql, ' . mysqli_error($this) . ' <<<<<<<<<<' . PHP_EOL . mysqli_error($this) . $qs);
+            }
+
+            return $qs;
+        } catch (\Exception $e) {
+            $this->error($e, $qs);
+            throw $e;
+        }
+    }
+
+    public function tryWork(string $qs, string $exception, bool|int $exceptionCode = false)
+    {
+        try {
+
+            if (!$this->query($qs)) {
+                if ($exceptionCode === false) {
+                    throw new \Exception($exception . ("<br /><pre>" . mysqli_error($this) . "<br /><br />\n" . $qs . "</pre>"));
+                } else {
+                    throw new \Exception($exception . ("<br /><pre>" . mysqli_error($this) . "<br /><br />\n" . $qs . "</pre>"), $exceptionCode);
+                }
+            }
+
+            return $qs;
+        } catch (\Exception $e) {
+            $this->error($e, $qs);
+            throw $e;
+        }
+    }
 }
