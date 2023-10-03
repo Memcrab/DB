@@ -176,7 +176,7 @@ class MySQL extends \mysqli
     {
         try {
             if (!$this->query($qs)) {
-                echo (date("Y-m-d H:i:s") . ' >>>>>>>>>> Error mysql, ' . mysqli_error($this) . ' <<<<<<<<<<' . PHP_EOL . mysqli_error($this) . $qs);
+                throw new \Exception("Mysql error: " . $this->error);
             }
 
             return $qs;
@@ -189,12 +189,11 @@ class MySQL extends \mysqli
     public function tryWork(string $qs, string $exception, bool|int $exceptionCode = false)
     {
         try {
-
             if (!$this->query($qs)) {
                 if ($exceptionCode === false) {
-                    throw new \Exception($exception . ("<br /><pre>" . mysqli_error($this) . "<br /><br />\n" . $qs . "</pre>"));
+                    throw new \Exception($exception . $this->error);
                 } else {
-                    throw new \Exception($exception . ("<br /><pre>" . mysqli_error($this) . "<br /><br />\n" . $qs . "</pre>"), $exceptionCode);
+                    throw new \Exception($exception . $this->error, $exceptionCode);
                 }
             }
 
