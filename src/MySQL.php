@@ -171,4 +171,36 @@ class MySQL extends \mysqli
         }
         return $objects;
     }
+
+    public function getWork(string $qs)
+    {
+        try {
+            if (!$this->query($qs)) {
+                throw new \Exception("Mysql error: " . $this->error);
+            }
+
+            return $qs;
+        } catch (\Exception $e) {
+            $this->error($e, $qs);
+            throw $e;
+        }
+    }
+
+    public function tryWork(string $qs, string $exception, bool|int $exceptionCode = false)
+    {
+        try {
+            if (!$this->query($qs)) {
+                if ($exceptionCode === false) {
+                    throw new \Exception($exception . $this->error);
+                } else {
+                    throw new \Exception($exception . $this->error, $exceptionCode);
+                }
+            }
+
+            return $qs;
+        } catch (\Exception $e) {
+            $this->error($e, $qs);
+            throw $e;
+        }
+    }
 }
