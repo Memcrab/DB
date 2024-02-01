@@ -203,4 +203,18 @@ class MySQL extends \mysqli
             throw $e;
         }
     }
+
+    public function aesEncrypt(string $encryptedData, string $passphrase)
+    {
+        $query = "IFNULL(
+            AES_ENCRYPT('" . $this->mres($encryptedData) . "', UNHEX(SHA2('" . $passphrase . "',512))), '" . $this->mres($encryptedData) . "')";
+        return $query;
+    }
+
+    public function aesDecrypt(string $decryptedData, string $passphrase)
+    {
+        $query = "IFNULL(
+            AES_DECRYPT(" . $decryptedData . ", UNHEX(SHA2('" . $passphrase . "', 512))), " . $decryptedData . ")";
+        return $query;
+    }
 }
