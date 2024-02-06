@@ -213,7 +213,7 @@ class MySQL extends \mysqli
     public function aesEncrypt(string $encryptedData, string $passphrase): string 
     {
         $string = "NULL";
-        if (empty($encryptedData)) {
+        if (!empty($encryptedData)) {
             $string = "AES_ENCRYPT('" . $this->mres($encryptedData) . "', UNHEX(SHA2('" . $passphrase . "',512)))";
         } 
 
