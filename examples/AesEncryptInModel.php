@@ -4,6 +4,7 @@
  * name
  * journal
  * description
+ * nullabble values aren't encrypted
 */
 
 function getSqlProperties(\Memcrab\DB\MySQL $DB, string $passphrase=null): array

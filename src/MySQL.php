@@ -220,6 +220,7 @@ class MySQL extends \mysqli
 
     /**
      * @param string $column column name where need to decrypt data
+     * - column name need be passed with a table name prefix
      * @param string $passphrase 
      * - if decrypting passphrase don't match with encrypt passphrase MySQL return NULL value
      * 
