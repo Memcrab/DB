@@ -203,4 +203,36 @@ class MySQL extends \mysqli
             throw $e;
         }
     }
+
+    /**
+     * @param string $encryptedData
+     * @param string $passphrase
+     * 
+     * @return string part of MySQL query for encrypting data or string "NULL" if there is no data for encryption
+     */
+    public function aesEncrypt(string $encryptedData, string $passphrase): string 
+    {
+        $string = "NULL";
+        if (!empty($encryptedData)) {
+            $string = "AES_ENCRYPT('" . $this->mres($encryptedData) . "', UNHEX(SHA2('" . $passphrase . "',512)))";
+        } 
+
+        return $string;     
+    }
+
+    /**
+     * @param string $column column name where need to decrypt data
+     * - column name need be passed with a table name prefix
+     * @param string $passphrase 
+     * - if decrypting passphrase don't match with encrypt passphrase MySQL return NULL value
+     *  Notice:
+     *  - if your query uses a short table name, don't forget to indicate it as part of the column name
+     * 
+     * @return string part of MySQL query for decrypting data
+     */
+    public function aesDecrypt(string $columnName, string $passphrase): string 
+    {
+        $string = "IF(ISNULL (" . $columnName . " ), NULL , AES_DECRYPT(" . $columnName .", UNHEX(SHA2('". $passphrase ."', 512))) )";
+        return $string;
+    }
 }
