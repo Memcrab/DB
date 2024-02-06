@@ -204,17 +204,30 @@ class MySQL extends \mysqli
         }
     }
 
-    public function aesEncrypt(string $encryptedData, string $passphrase)
+    /**
+     * @param string $encryptedData
+     * @param string $passphrase
+     * 
+     * @return string part of MySQL query for encrypting data or string "NULL" if there is no data for encryption
+     */
+    public function aesEncrypt(string $encryptedData, string $passphrase): string 
     {
-        $query = "IFNULL(
-            AES_ENCRYPT('" . $this->mres($encryptedData) . "', UNHEX(SHA2('" . $passphrase . "',512))), '" . $this->mres($encryptedData) . "')";
-        return $query;
+        $string = empty($encryptedData) 
+            ? "NULL"
+            : "AES_ENCRYPT('" . $this->mres($encryptedData) . "', UNHEX(SHA2('" . $passphrase . "',512)))";
+        return $string;     
     }
 
-    public function aesDecrypt(string $decryptedData, string $passphrase)
+    /**
+     * @param string $column column name where need to decrypt data
+     * @param string $passphrase 
+     * - if decrypting passphrase don't match with encrypt passphrase MySQL return NULL value
+     * 
+     * @return string part of MySQL query for decrypting data
+     */
+    public function aesDecrypt(string $column, string $passphrase): string 
     {
-        $query = "IFNULL(
-            AES_DECRYPT(" . $decryptedData . ", UNHEX(SHA2('" . $passphrase . "', 512))), " . $decryptedData . ")";
-        return $query;
+        $string = "IF(ISNULL (" . $column . " ), NULL , AES_DECRYPT(" . $column .", UNHEX(SHA2('". $passphrase ."', 512))) )";
+        return $string;
     }
 }
