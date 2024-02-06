@@ -212,9 +212,11 @@ class MySQL extends \mysqli
      */
     public function aesEncrypt(string $encryptedData, string $passphrase): string 
     {
-        $string = empty($encryptedData) 
-            ? "NULL"
-            : "AES_ENCRYPT('" . $this->mres($encryptedData) . "', UNHEX(SHA2('" . $passphrase . "',512)))";
+        $string = "NULL";
+        if (empty($encryptedData)) {
+            $string = "AES_ENCRYPT('" . $this->mres($encryptedData) . "', UNHEX(SHA2('" . $passphrase . "',512)))";
+        } 
+
         return $string;     
     }
 
@@ -223,12 +225,14 @@ class MySQL extends \mysqli
      * - column name need be passed with a table name prefix
      * @param string $passphrase 
      * - if decrypting passphrase don't match with encrypt passphrase MySQL return NULL value
+     *  Notice:
+     *  - if your query uses a short table name, don't forget to indicate it as part of the column name
      * 
      * @return string part of MySQL query for decrypting data
      */
-    public function aesDecrypt(string $column, string $passphrase): string 
+    public function aesDecrypt(string $columnName, string $passphrase): string 
     {
-        $string = "IF(ISNULL (" . $column . " ), NULL , AES_DECRYPT(" . $column .", UNHEX(SHA2('". $passphrase ."', 512))) )";
+        $string = "IF(ISNULL (" . $columnName . " ), NULL , AES_DECRYPT(" . $columnName .", UNHEX(SHA2('". $passphrase ."', 512))) )";
         return $string;
     }
 }
