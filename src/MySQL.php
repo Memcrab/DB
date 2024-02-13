@@ -210,7 +210,7 @@ class MySQL extends \mysqli
      * 
      * @return string part of MySQL query for encrypting data or string "NULL" if there is no data for encryption
      */
-    public function aesEncrypt(string $encryptedData, string $passphrase): string 
+    public function aesEncrypt(?string $encryptedData, string $passphrase): string 
     {
         $string = "NULL";
         if (!empty($encryptedData)) {
