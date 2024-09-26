@@ -112,9 +112,9 @@ class MDB extends \mysqli implements DB
         self::$context = $context;
     }
 
-    private function error(\Exception $e, string $qs = ''): void
+    private function error(\Throwable $e, string $qs = ''): void
     {
-        $this->ErrorHandler->error('MySQL Exception (name:`' . ($this->name ?? null) . '`): ' . $e->getMessage() .  ', SQL:' . $qs, self::$context);
+        $this->ErrorHandler->error('MySQL ' . $e::class . ' (name:`' . ($this->name ?? null) . '`): ' . $e->getMessage() .  ', SQL:' . $qs, self::$context);
     }
 
     private function declareConnectiоnOptions()
@@ -190,7 +190,7 @@ class MDB extends \mysqli implements DB
             $Result = $this->query($qs);
             $row = $Result->fetch_array($type);
             $Result->free();
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             $this->error($e, $qs);
             isset($Result) ?? $Result->free();
             throw $e;
@@ -205,7 +205,7 @@ class MDB extends \mysqli implements DB
             $Result = $this->query($qs);
             $array = $Result->fetch_all($type);
             $Result->free();
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             $this->error($e, $qs);
             isset($Result) ?? $Result->free();
             throw $e;
@@ -267,7 +267,7 @@ class MDB extends \mysqli implements DB
                 array_push($objects, $Object);
             }
             $Result->free();
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             $this->error($e, $qs);
             isset($Result) ?? $Result->free();
             throw $e;
@@ -283,7 +283,7 @@ class MDB extends \mysqli implements DB
             $Object = $Result->fetch_object($className, $constructorParams);
             $ResultObject = $logic($Object);
             $Result->free();
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             $this->error($e, $qs);
             isset($Result) ?? $Result->free();
             throw $e;
@@ -301,7 +301,7 @@ class MDB extends \mysqli implements DB
                 array_push($objects, $logic($Object));
             }
             $Result->free();
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             $this->error($e, $qs);
             isset($Result) ?? $Result->free();
             throw $e;
