@@ -114,7 +114,7 @@ class MDB extends \mysqli implements DB
 
     private function error(\Throwable $e, string $qs = ''): void
     {
-        $this->ErrorHandler->error('MySQL ' . $e::class . ' (name:`' . ($this->name ?? null) . '`): ' . $e->getMessage() .  ', SQL:' . $qs, self::$context);
+        $this->ErrorHandler->error('MySQL ' . $e::class . ' (name:`' . ($this->name ?? null) . '`): ' . $e->getMessage() .  ', SQL:' . $qs . ', BACKTRACE: ' . $e->getTraceAsString(), self::$context);
     }
 
     private function declareConnectiоnOptions()
