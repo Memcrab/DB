@@ -235,4 +235,13 @@ class MySQL extends \mysqli
         $string = "IF(ISNULL (" . $columnName . " ), NULL , AES_DECRYPT(" . $columnName .", UNHEX(SHA2('". $passphrase ."', 512))) )";
         return $string;
     }
+
+    public function ping(): bool {
+        try {
+            return @parent::ping();
+        } catch (\Exception $e) {
+            $this->error($e);
+            return false;
+        }
+    }
 }
